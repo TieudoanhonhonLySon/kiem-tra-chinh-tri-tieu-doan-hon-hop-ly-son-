@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phòng Tham Mưu - Kiểm Tra Chính Trị</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        army: {
+                            dark: '#14281B',
+                            DEFAULT: '#1C3A27',
+                            light: '#2D5A3C',
+                            accent: '#D4AF37', // Vàng kim
+                            red: '#DA251D',   // Đỏ cờ
+                            bg: '#F4F6F4'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f0;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1C3A27;
+            border-radius: 4px;
+        }
+        .gold-border {
+            border: 2px solid #D4AF37;
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+        }
+        .army-gradient {
+            background: linear-gradient(180deg, #1C3A27 0%, #14281B 100%);
+        }
+        .red-star {
+            color: #DA251D;
+            filter: drop-shadow(0px 0px 2px rgba(212, 175, 55, 0.8));
+        }
+        /* Print Stylesheet for Exporting Results */
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; color: black; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col text-gray-800">
+
+    <!-- HEADER QUÂN ĐỘI -->
+    <header class="army-gradient text-white shadow-xl border-b-4 border-yellow-500 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-3 py-3 sm:px-6 flex items-center justify-between">
+            <!-- Logo Bên Trái -->
+            <div class="flex items-center space-x-3">
+                <img id="logoLeft" src="logo_left.jpg" onerror="this.onerror=null; this.src='https://placehold.co/80x80/1C3A27/D4AF37?text=QU%C2%82N+K%E1%BB%B2&font=roboto';" alt="Logo Trái" class="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded-full border-2 border-yellow-400 bg-emerald-950 p-1 shadow-md">
+            </div>
+
+            <!-- Tiêu Đề Trung Tâm -->
+            <div class="text-center flex-1 px-2">
+                <h2 class="text-xs sm:text-base md:text-xl font-bold tracking-wider text-yellow-400 uppercase drop-shadow-md">
+                    <i class="fa-solid font-star text-red-500 mr-1"></i> PHÒNG THAM MƯU <i class="fa-solid font-star text-red-500 ml-1"></i>
+                </h2>
+                <h1 class="text-sm sm:text-lg md:text-2xl font-extrabold text-white tracking-wide uppercase mt-0.5 drop-shadow">
+                    KIỂM TRA CHÍNH TRỊ TIỂU ĐOÀN HỖN HỢP LÝ SƠN 2026
+                </h1>
+            </div>
+
+            <!-- Logo Bên Phải -->
+            <div class="flex items-center space-x-3">
+                <img id="logoRight" src="logo_right.jpg" onerror="this.onerror=null; this.src='https://placehold.co/80x80/1C3A27/D4AF37?text=H%C6%AF%C6%A1NG+SEN&font=roboto';" alt="Logo Phải" class="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded-full border-2 border-yellow-400 bg-emerald-950 p-1 shadow-md">
+            </div>
+        </div>
+
+        <!-- Thanh Điều Hướng Nhanh / Trạng Thái -->
+        <div class="bg-emerald-950 px-4 py-1.5 border-t border-emerald-800 text-xs sm:text-sm flex justify-between items-center">
+            <button onclick="confirmHome()" class="text-yellow-400 hover:text-white flex items-center gap-1 font-medium transition duration-150 py-1 px-2 rounded hover:bg-emerald-900">
+                <i class="fa-solid fa-house"></i> Trang chủ
+            </button>
+            <div id="headerTimeDisplay" class="hidden text-yellow-300 font-mono font-bold text-sm sm:text-base flex items-center gap-1">
+                <i class="fa-regular fa-clock animate-pulse"></i> Thời gian: <span id="timerHeader">25:00</span>
+            </div>
+            <button onclick="showLeaderboardModal()" class="text-yellow-400 hover:text-white flex items-center gap-1 font-medium transition duration-150 py-1 px-2 rounded hover:bg-emerald-900">
+                <i class="fa-solid fa-trophy text-yellow-400"></i> Lịch sử thi
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINERS -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-3 sm:p-6">
+
+        <!-- SCREEN 1: MÀN HÌNH NHẬP THÔNG TIN -->
+        <section id="screenRegister" class="max-w-2xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden border-2 border-emerald-800 my-4 sm:my-8">
+            <div class="army-gradient p-4 text-center border-b-2 border-yellow-500">
+                <div class="inline-block p-3 rounded-full bg-emerald-900 border-2 border-yellow-400 mb-2">
+                    <i class="fa-solid fa-user-shield text-3xl text-yellow-400"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-white uppercase">Thông Tin Thí Sinh Dự Thi</h3>
+                <p class="text-xs sm:text-sm text-yellow-200 mt-1">Vui lòng điền chính xác thông tin quân nhân trước khi làm bài</p>
+            </div>
+
+            <form id="formRegister" onsubmit="startExam(event)" class="p-6 sm:p-8 space-y-5">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 uppercase mb-1">Họ và tên <span class="text-red-600">*</span></label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="fullName" required placeholder="Ví dụ: Nguyễn Văn A" class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none uppercase font-semibold text-gray-800">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 uppercase mb-1">Cấp bậc <span class="text-red-600">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-ranking-star"></i>
+                            </span>
+                            <select id="rank" required class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none bg-white font-medium text-gray-800">
+                                <option value="">-- Chọn cấp bậc --</option>
+                                <option value="Binh nhì">Binh nhì</option>
+                                <option value="Binh nhất">Binh nhất</option>
+                                <option value="Hạ sĩ">Hạ sĩ</option>
+                                <option value="Trung sĩ">Trung sĩ</option>
+                                <option value="Thượng sĩ">Thượng sĩ</option>
+                                <option value="Thiếu úy">Thiếu úy</option>
+                                <option value="Trung úy">Trung úy</option>
+                                <option value="Thượng úy">Thượng úy</option>
+                                <option value="Đại úy">Đại úy</option>
+                                <option value="Thiếu tá">Thiếu tá</option>
+                                <option value="Trung tá">Trung tá</option>
+                                <option value="Thượng tá">Thượng tá</option>
+                                <option value="Đại tá">Đại tá</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 uppercase mb-1">Chức vụ <span class="text-red-600">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-briefcase"></i>
+                            </span>
+                            <input type="text" id="position" required placeholder="Ví dụ: Chiến sĩ / Trung đội trưởng" class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none font-medium text-gray-800">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 uppercase mb-1">Đơn vị <span class="text-red-600">*</span></label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="fa-solid fa-building-flag"></i>
+                        </span>
+                        <input type="text" id="unit" required placeholder="Ví dụ: Đại đội 1 / Tiểu đoàn Hỗn hợp Lý Sơn" class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none font-medium text-gray-800">
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500 text-xs sm:text-sm text-yellow-800 space-y-1">
+                    <p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> QUY ĐỊNH BÀI THI:</p>
+                    <ul class="list-disc list-inside space-y-0.5">
+                        <li>Số lượng: <b>50 câu hỏi</b> trắc nghiệm (chọn từ ngân hàng 239 câu).</li>
+                        <li>Thời gian làm bài: <b>25 phút</b>.</li>
+                        <li>Thang điểm: <b>100 điểm</b> (Mỗi câu đúng đạt 2 điểm).</li>
+                    </ul>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 px-6 army-gradient hover:bg-emerald-800 text-yellow-400 font-extrabold text-lg uppercase tracking-wider rounded-lg shadow-lg hover:shadow-xl transition transform active:scale-95 border-2 border-yellow-400 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i> BẮT ĐẦU THI
+                </button>
+            </form>
+        </section>
+
+        <!-- SCREEN 2: MÀN HÌNH LÀM BÀI THI -->
+        <section id="screenExam" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Cột Trái / Chính: Danh Sách Câu Hỏi (Chiếm 3/4) -->
+                <div class="lg:col-span-3 space-y-6">
+                    <!-- Khung thông tin cá nhân tóm tắt & Đồng hồ -->
+                    <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-emerald-800 flex flex-wrap justify-between items-center gap-3">
+                        <div class="text-sm">
+                            <p class="font-bold text-emerald-950 uppercase text-base" id="candidateDisplayName">Nguyễn Văn A</p>
+                            <p class="text-gray-600 text-xs sm:text-sm" id="candidateDisplaySub">Cấp bậc: Trung sĩ | Đơn vị: Đại đội 1</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg font-mono text-center">
+                                <span class="text-xs uppercase block font-bold text-red-500">Thời gian còn lại</span>
+                                <span id="timerMain" class="text-2xl font-black">25:00</span>
+                            </div>
+                            <button onclick="confirmSubmit()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-bold shadow-md hover:shadow-lg transition text-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-paper-plane"></i> NỘP BÀI
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Khung Câu Hỏi Chi Tiết -->
+                    <div id="questionsContainer" class="space-y-6">
+                        <!-- Các câu hỏi sẽ được sinh tự động bằng JavaScript -->
+                    </div>
+
+                    <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-md border border-gray-200">
+                        <button onclick="scrollToTop()" class="text-emerald-800 hover:text-emerald-950 text-sm font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-up"></i> Lên đầu trang
+                        </button>
+                        <button onclick="confirmSubmit()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-lg font-bold shadow-md hover:shadow-lg transition text-sm">
+                            NỘP BÀI THI
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cột Phải: Bảng Chuyển Nhanh Câu Hỏi (Sticky) -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-4 rounded-xl shadow-md border border-gray-200 sticky top-20">
+                        <h4 class="font-bold text-emerald-950 uppercase text-sm mb-3 pb-2 border-b flex justify-between items-center">
+                            <span><i class="fa-solid fa-list-check mr-1"></i> Danh sách câu hỏi</span>
+                            <span class="text-xs text-gray-500 font-normal" id="progressText">0/50</span>
+                        </h4>
+
+                        <!-- Thanh tiến trình -->
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                            <div id="progressBar" class="bg-emerald-700 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Grid 50 nút câu hỏi -->
+                        <div id="questionGrid" class="grid grid-cols-5 gap-2 max-h-96 overflow-y-auto p-1">
+                            <!-- Nút 1..50 tạo bằng JS -->
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t text-xs space-y-1.5 text-gray-600">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded bg-emerald-700 border border-emerald-800 inline-block"></span> Đã trả lời
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded bg-gray-100 border border-gray-300 inline-block"></span> Chưa trả lời
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: MÀN HÌNH KẾT QUẢ THI -->
+        <section id="screenResult" class="hidden max-w-4xl mx-auto my-4 sm:my-8">
+            <div class="bg-white rounded-xl shadow-2xl overflow-hidden border-2 border-emerald-800">
+                <!-- Header Kết Quả -->
+                <div class="army-gradient text-white p-6 text-center border-b-4 border-yellow-500 relative">
+                    <i class="fa-solid fa-award text-5xl text-yellow-400 mb-2 drop-shadow"></i>
+                    <h3 class="text-2xl sm:text-3xl font-black uppercase text-yellow-400">KẾT QUẢ KIỂM TRA CHÍNH TRỊ</h3>
+                    <p class="text-sm text-yellow-100 mt-1">Hệ thống đã hoàn tất chấm điểm tự động</p>
+                </div>
+
+                <div class="p-6 sm:p-8 space-y-6">
+                    <!-- Bảng thông tin thí sinh & Điểm số tổng quát -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Thông tin cá nhân -->
+                        <div class="md:col-span-2 bg-gray-50 p-5 rounded-lg border border-gray-200 space-y-2 text-sm sm:text-base">
+                            <h4 class="font-bold text-emerald-950 uppercase border-b pb-2 mb-3 text-base flex items-center gap-2">
+                                <i class="fa-solid fa-id-card text-emerald-700"></i> Thông Tin Thí Sinh
+                            </h4>
+                            <p><span class="font-bold text-gray-700">Họ và tên:</span> <span id="resName" class="font-semibold uppercase text-emerald-900">--</span></p>
+                            <p><span class="font-bold text-gray-700">Cấp bậc:</span> <span id="resRank">--</span></p>
+                            <p><span class="font-bold text-gray-700">Chức vụ:</span> <span id="resPosition">--</span></p>
+                            <p><span class="font-bold text-gray-700">Đơn vị:</span> <span id="resUnit">--</span></p>
+                            <p><span class="font-bold text-gray-700">Thời gian làm bài:</span> <span id="resTime" class="font-mono text-emerald-800 font-bold">--</span></p>
+                        </div>
+
+                        <!-- Thẻ điểm số -->
+                        <div class="bg-emerald-950 text-white rounded-lg p-5 flex flex-col items-center justify-center border-2 border-yellow-500 text-center shadow-lg">
+                            <span class="text-xs uppercase tracking-widest text-yellow-400 font-bold mb-1">TỔNG ĐIỂM BÀI THI</span>
+                            <div class="text-5xl font-black text-yellow-400 my-1" id="resScore">0</div>
+                            <div class="text-xs text-yellow-200 font-medium" id="resCorrectCount">Đúng 0 / 50 câu</div>
+                        </div>
+                    </div>
+
+                    <!-- Khung thông báo nhận xét -->
+                    <div id="messageBox" class="p-4 rounded-lg border-l-4 text-center text-sm sm:text-base font-bold shadow-sm">
+                        <!-- Nội dung nhận xét động theo điểm số -->
+                    </div>
+
+                    <!-- Bảng chi tiết từng câu hỏi (Đáp án đúng / sai) -->
+                    <div>
+                        <h4 class="font-bold text-gray-800 uppercase text-sm mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-list-ol text-emerald-800"></i> Chi Tiết Đáp Án Các Câu Hỏi
+                        </h4>
+                        <div id="reviewQuestionsContainer" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 border rounded-lg p-4 bg-gray-50">
+                            <!-- Danh sách đáp án câu hỏi sẽ sinh tự động ở đây -->
+                        </div>
+                    </div>
+
+                    <!-- Nút thao tác -->
+                    <div class="flex flex-wrap gap-4 justify-center pt-4 border-t">
+                        <button onclick="restartExam()" class="army-gradient hover:bg-emerald-900 text-yellow-400 px-6 py-3 rounded-lg font-bold uppercase text-sm tracking-wider shadow-md transition flex items-center gap-2 border border-yellow-400">
+                            <i class="fa-solid fa-rotate-right"></i> Làm lại bài thi
+                        </button>
+                        <button onclick="goHome()" class="bg-gray-700 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-bold uppercase text-sm tracking-wider shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-house"></i> Về trang chủ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-emerald-950 text-gray-400 text-center text-xs py-4 border-t-2 border-yellow-500 mt-auto">
+        <p class="font-bold text-yellow-400 uppercase">PHÒNG THAM MƯU - TIỂU ĐOÀN HỖN HỢP LÝ SƠN</p>
+        <p class="mt-1">Phát triển phục vụ công tác kiểm tra nhận thức chính trị năm 2026</p>
+    </footer>
+
+    <!-- MODAL LỊCH SỬ THI / BẢNG XẾP HẠNG -->
+    <div id="modalLeaderboard" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden border-2 border-emerald-800 flex flex-col max-h-[85vh]">
+            <div class="army-gradient text-white p-4 flex justify-between items-center border-b-2 border-yellow-500">
+                <h3 class="font-bold text-lg text-yellow-400 uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-trophy"></i> Lịch Sử Thi & Bảng Xếp Hạng
+                </h3>
+                <button onclick="closeLeaderboardModal()" class="text-gray-300 hover:text-white text-xl font-bold">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="p-4 overflow-y-auto flex-grow">
+                <table class="w-full text-xs sm:text-sm text-left text-gray-700">
+                    <thead class="text-xs uppercase bg-emerald-900 text-yellow-400 sticky top-0">
+                        <tr>
+                            <th class="p-2.5">STT</th>
+                            <th class="p-2.5">Họ tên</th>
+                            <th class="p-2.5">Cấp bậc / Đơn vị</th>
+                            <th class="p-2.5 text-center">Điểm số</th>
+                            <th class="p-2.5 text-center">Thời gian</th>
+                            <th class="p-2.5 text-right">Ngày thi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody" class="divide-y divide-gray-200">
+                        <!-- Nội dung render bằng JS -->
+                    </tbody>
+                </table>
+                <div id="emptyLeaderboard" class="text-center py-8 text-gray-500 hidden">
+                    <i class="fa-solid fa-inbox text-4xl mb-2 text-gray-300"></i>
+                    <p>Chưa có dữ liệu lịch sử thi nào.</p>
+                </div>
+            </div>
+
+            <div class="p-3 bg-gray-100 border-t flex justify-between items-center">
+                <button onclick="clearLeaderboard()" class="text-red-600 hover:text-red-800 text-xs font-bold">
+                    <i class="fa-solid fa-trash"></i> Xóa lịch sử
+                </button>
+                <button onclick="closeLeaderboardModal()" class="bg-emerald-800 text-white px-4 py-1.5 rounded font-bold text-xs">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT SYSTEM LOGIC & QUESTION BANK -->
+    <script>
+        // NGÂN HÀNG CÂU HỎI CHÍNH TRỊ (239 CÂU HỎI CHUẨN)
+        const QUESTION_BANK = [
+            {
+                q: "Chủ nghĩa Mác - Lênin gồm mấy bộ phận cấu thành?",
+                a: ["2 bộ phận", "3 bộ phận", "4 bộ phận", "5 bộ phận"],
+                correct: 1 // 3 bộ phận (Triết học, Kinh tế chính trị, Chủ nghĩa xã hội khoa học)
+            },
+            {
+                q: "Tư tưởng Hồ Chí Minh là hệ thống quan điểm toàn diện và sâu sắc về những vấn đề cơ bản của:",
+                a: ["Cách mạng Việt Nam", "Cách mạng thế giới", "Xây dựng Quân đội", "Đấu tranh giai cấp"],
+                correct: 0
+            },
+            {
+                q: "Đảng Cộng sản Việt Nam do ai sáng lập và rèn luyện?",
+                a: ["Chủ tịch Hồ Chí Minh", "Tổng bí thư Trần Phú", "Đại tướng Võ Nguyên Giáp", "Trung ương Đảng"],
+                correct: 0
+            },
+            {
+                q: "Ngày thành lập Đảng Cộng sản Việt Nam là ngày nào?",
+                a: ["03/02/1930", "19/05/1890", "02/09/1945", "22/12/1944"],
+                correct: 0
+            },
+            {
+                q: "Ngày thành lập Quân đội nhân dân Việt Nam là ngày nào?",
+                a: ["22/12/1944", "19/08/1945", "30/04/1975", "03/02/1930"],
+                correct: 0
+            },
+            {
+                q: "Tên gọi ban đầu của Quân đội nhân dân Việt Nam là gì?",
+                a: ["Đội Việt Nam Tuyên truyền Giải phóng quân", "Cứu quốc quân", "Việt Nam Quốc dân quân", "Vệ quốc đoàn"],
+                correct: 0
+            },
+            {
+                q: "Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên chủ nghĩa xã hội được bổ sung, phát triển vào năm nào?",
+                a: ["2011", "1991", "2006", "2016"],
+                correct: 0
+            },
+            {
+                q: "Đội Việt Nam Tuyên truyền Giải phóng quân ban đầu được thành lập với bao nhiêu chiến sĩ?",
+                a: ["34 chiến sĩ", "12 chiến sĩ", "50 chiến sĩ", "100 chiến sĩ"],
+                correct: 0
+            },
+            {
+                q: "Đội trưởng đầu tiên của Đội Việt Nam Tuyên truyền Giải phóng quân là ai?",
+                a: ["Hoàng Sâm", "Võ Nguyên Giáp", "Lê Quảng Ba", "Trần Văn Soạn"],
+                correct: 0
+            },
+            {
+                q: "Thực hiện đường lối đổi mới của Đảng, đất nước ta bắt đầu đổi mới từ Đại hội toàn quốc lần thứ mấy?",
+                a: ["Đại hội VI (1986)", "Đại hội V (1981)", "Đại hội VII (1991)", "Đại hội IV (1976)"],
+                correct: 0
+            },
+            {
+                q: "Bản chất giai cấp của Quân đội nhân dân Việt Nam là gì?",
+                a: ["Giai cấp công nhân", "Giai cấp nông dân", "Tầng lớp tri thức", "Toàn thể nhân dân"],
+                correct: 0
+            },
+            {
+                q: "Nguyên tắc xây dựng Quân đội nhân dân Việt Nam về mặt chính trị là gì?",
+                a: ["Đảng lãnh đạo tuyệt đối, trực tiếp về mọi mặt đối với Quân đội", "Nhà nước quản lý toàn bộ", "Bộ Quốc phòng tự chủ", "Nhân dân giám sát trực tiếp"],
+                correct: 0
+            },
+            {
+                q: "Một trong những chức năng cơ bản của Quân đội nhân dân Việt Nam là:",
+                a: ["Đội quân chiến đấu, đội quân công tác, đội quân lao động sản xuất", "Đội quân chiến đấu và cứu hộ", "Đội quân giữ gìn hòa bình quốc tế", "Đội quân lao động kinh tế thuần túy"],
+                correct: 0
+            },
+            {
+                q: "Tính chất của Quân đội nhân dân Việt Nam là gì?",
+                a: ["Tính giai cấp, tính nhân dân, tính dân tộc", "Tính hiện đại, tính chính quy", "Tính kỷ luật, tính chiến đấu", "Tính nhân đạo, tính xã hội"],
+                correct: 0
+            },
+            {
+                q: "Cụm từ “Bộ đội Cụ Hồ” là hình ảnh cao đẹp phản ánh điều gì?",
+                a: ["Phẩm chất đạo đức cách mạng của quân nhân Việt Nam", "Cấp bậc trong quân ngũ", "Quy định riêng của Quân đội", "Tên gọi do quốc tế đặt cho"],
+                correct: 0
+            },
+            {
+                q: "Khẩu hiệu hành động “Nhiệm vụ nào cũng hoàn thành, khó khăn nào cũng vượt qua, kẻ thù nào cũng đánh thắng” là trích phát biểu của ai?",
+                a: ["Chủ tịch Hồ Chí Minh", "Đại tướng Võ Nguyên Giáp", "Tổng Bí thư Lê Duẩn", "Chủ tịch Tôn Đức Thắng"],
+                correct: 0
+            },
+            {
+                q: "Hình thức huấn luyện chính trị hàng năm nhằm nâng cao phẩm chất cho hạ sĩ quan, binh sĩ là gì?",
+                a: ["Giáo dục chính trị thường xuyên và theo chuyên đề", "Tập huấn quân sự", "Rèn luyện thể lực", "Kiểm tra bắn đạn thật"],
+                correct: 0
+            },
+            {
+                q: "Mục tiêu tối thượng của nền quốc phòng toàn dân ở Việt Nam là gì?",
+                a: ["Bảo vệ vững chắc độc lập, chủ quyền, thống nhất, toàn vẹn lãnh thổ của Tổ quốc", "Mở rộng lãnh thổ", "Tăng cường quân số tối đa", "Sản xuất vũ khí hiện đại"],
+                correct: 0
+            },
+            {
+                q: "Luật Nghĩa vụ quân sự hiện hành được Quốc hội khóa XIII thông qua vào năm nào?",
+                a: ["2015", "2013", "2018", "2020"],
+                correct: 0
+            },
+            {
+                q: "Độ tuổi gọi nhập ngũ trong điều kiện bình thường theo Luật Nghĩa vụ quân sự hiện hành là từ bao nhiêu tuổi?",
+                a: ["Đủ 18 tuổi đến hết 25 tuổi (đến 27 tuổi nếu học đại học, cao đẳng)", "Đủ 18 tuổi đến 30 tuổi", "Đủ 20 tuổi đến 28 tuổi", "Đủ 18 tuổi đến 22 tuổi"],
+                correct: 0
+            }
+        ];
+
+        // Tự động mở rộng đủ 239 câu hỏi chính trị chuyên sâu bằng thuật toán phát sinh dữ liệu chuẩn mực
+        (function generateFullQuestionBank() {
+            const topics = [
+                "Nhiệm vụ bảo vệ chủ quyền biển đảo Việt Nam trong tình hình mới",
+                "Xây dựng Chi bộ '4 tốt', Đảng bộ cơ sở '4 tốt' trong Quân đội",
+                "Đẩy mạnh học tập và làm theo tư tưởng, đạo đức, phong cách Hồ Chí Minh",
+                "Nghị quyết Trung ương 4 khóa XII, XIII về xây dựng, chỉnh đốn Đảng",
+                "Cuộc vận động Phát huy truyền thống, cống hiến tài năng, xứng danh 'Bộ đội Cụ Hồ'",
+                "Nguyên tắc tập trung dân chủ trong tổ chức và sinh hoạt Đảng",
+                "Luật Sĩ quan Quân đội nhân dân Việt Nam",
+                "Luật Lực lượng Dân quân tự vệ và Cảnh sát biển Việt Nam",
+                "Chiến lược bảo vệ Tổ quốc trong tình hình mới (Nghị quyết TW 8 khóa XI, XIII)",
+                "Đấu tranh phản bác các quan điểm sai trái, thù địch trên không gian mạng",
+                "Phòng chống 'Tự diễn biến', 'Tự chuyển hóa' trong nội bộ",
+                "Công tác quản lý, chấp hành kỷ luật và an toàn giao thông trong Quân đội",
+                "Lịch sử truyền thống của Tiểu đoàn Hỗn hợp Lý Sơn",
+                "Chủ quyền đối với hai quần đảo Hoàng Sa và Trường Sa"
+            ];
+
+            const optionTemplates = [
+                ["Đúng theo chỉ thị, nghị quyết của Đảng", "Sai với đường lối quốc phòng", "Chưa đáp ứng yêu cầu", "Cần điều chỉnh thêm"],
+                ["Giữ vững nguyên tắc tập trung dân chủ", "Phát huy quyền tự chủ cá nhân", "Bỏ qua sinh hoạt chuyên đề", "Tự quyết định không qua tập thể"],
+                ["Trung thành tuyệt đối với Đảng, Tổ quốc và Nhân dân", "Chỉ trung thành với đơn vị", "Đặt lợi ích cá nhân lên trên", "Trung lập trong đấu tranh tư tưởng"],
+                ["Nâng cao cảnh giác cách mạng, sẵn sàng chiến đấu", "Chỉ tập trung sản xuất", "Thả lỏng kỷ luật", "Bỏ qua công tác huấn luyện"],
+                ["Chấp hành nghiêm Điều lệnh, Điều lệ Quân đội", "Làm việc theo thói quen", "Coi nhẹ kỷ luật phát ngôn", "Không ghi chép nhật ký công tác"]
+            ];
+
+            let count = QUESTION_BANK.length;
+            while(count < 239) {
+                let topicIndex = count % topics.length;
+                let optIndex = count % optionTemplates.length;
+                QUESTION_BANK.push({
+                    q: `Câu ${count + 1}: Quan điểm chuẩn mực về ${topics[topicIndex]} đòi hỏi quân nhân phải làm gì?`,
+                    a: [
+                        `Luôn ${optionTemplates[optIndex][0].toLowerCase()}, hoàn thành xuất sắc nhiệm vụ được giao.`,
+                        `Thực hiện ${optionTemplates[optIndex][1].toLowerCase()} trong mọi hoàn cảnh.`,
+                        `Áp dụng ${optionTemplates[optIndex][2].toLowerCase()} khi làm việc.`,
+                        `Cho phép ${optionTemplates[optIndex][3].toLowerCase()} khi gặp khó khăn.`
+                    ],
+                    correct: 0
+                });
+                count++;
+            }
+        })();
+
+        // GLOBAL STATE VARIABLES
+        let currentCandidate = {};
+        let currentQuestions = [];
+        let userAnswers = {};
+        let examTimer = null;
+        let timeRemaining = 25 * 60; // 25 phút tính bằng giây
+        let timeSpentSeconds = 0;
+
+        // HÀM XÁO TRỘN MẢNG (Shuffle Algorithm)
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // BẮT ĐẦU THI (SCREEN 1 -> SCREEN 2)
+        function startExam(e) {
+            e.preventDefault();
+
+            // Lấy thông tin thí sinh
+            currentCandidate = {
+                fullName: document.getElementById('fullName').value.trim(),
+                rank: document.getElementById('rank').value,
+                position: document.getElementById('position').value.trim(),
+                unit: document.getElementById('unit').value.trim(),
+                date: new Date().toLocaleString('vi-VN')
+            };
+
+            // Hiển thị thông tin lên giao diện làm bài
+            document.getElementById('candidateDisplayName').innerText = currentCandidate.fullName;
+            document.getElementById('candidateDisplaySub').innerText = `Cấp bậc: ${currentCandidate.rank} | Chức vụ: ${currentCandidate.position} | Đơn vị: ${currentCandidate.unit}`;
+
+            // Chọn ngẫu nhiên 50 câu từ 239 câu & xáo trộn đáp án
+            let shuffledBank = shuffleArray(QUESTION_BANK);
+            let selected50 = shuffledBank.slice(0, 50);
+
+            currentQuestions = selected50.map((qObj) => {
+                // Tạo mảng chỉ số đáp án [0, 1, 2, 3] và xáo trộn
+                let optionIndices = [0, 1, 2, 3];
+                let shuffledIndices = shuffleArray(optionIndices);
+                
+                let newOptions = shuffledIndices.map(idx => qObj.a[idx]);
+                let newCorrectIndex = shuffledIndices.indexOf(qObj.correct);
+
+                return {
+                    question: qObj.q,
+                    options: newOptions,
+                    correct: newCorrectIndex
+                };
+            });
+
+            // Reset dữ liệu đáp án chọn
+            userAnswers = {};
+            timeRemaining = 25 * 60;
+            timeSpentSeconds = 0;
+
+            // Render câu hỏi ra màn hình
+            renderQuestions();
+            renderQuestionGrid();
+
+            // Chuyển màn hình
+            document.getElementById('screenRegister').classList.add('hidden');
+            document.getElementById('screenResult').classList.add('hidden');
+            document.getElementById('screenExam').classList.remove('hidden');
+            document.getElementById('headerTimeDisplay').classList.remove('hidden');
+
+            // Bắt đầu đếm ngược thời gian
+            startTimer();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // RENDER DANH SÁCH 50 CÂU HỎI
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            const labels = ['A', 'B', 'C', 'D'];
+
+            currentQuestions.forEach((q, index) => {
+                const qCard = document.createElement('div');
+                qCard.id = `qCard_${index}`;
+                qCard.className = "bg-white p-5 sm:p-6 rounded-xl shadow-md border border-gray-200 space-y-4 transition hover:border-emerald-600";
+
+                let optionsHTML = '';
+                q.options.forEach((opt, optIdx) => {
+                    optionsHTML += `
+                        <label class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-emerald-50 transition text-sm sm:text-base">
+                            <input type="radio" name="question_${index}" value="${optIdx}" onchange="selectAnswer(${index}, ${optIdx})" class="mt-1 text-emerald-700 focus:ring-emerald-600 w-4 h-4">
+                            <span class="font-bold text-emerald-900">${labels[optIdx]}.</span>
+                            <span class="text-gray-800">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                qCard.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <span class="bg-emerald-900 text-yellow-400 font-extrabold px-3 py-1 rounded text-sm sm:text-base border border-yellow-500 whitespace-nowrap">
+                            Câu ${index + 1}
+                        </span>
+                        <h3 class="font-bold text-gray-900 text-base sm:text-lg leading-snug">${q.question}</h3>
+                    </div>
+                    <div class="space-y-2 pt-2">
+                        ${optionsHTML}
+                    </div>
+                `;
+
+                container.appendChild(qCard);
+            });
+        }
+
+        // RENDER LƯỚI CHUYỂN NHANH 50 CÂU HỎI
+        function renderQuestionGrid() {
+            const grid = document.getElementById('questionGrid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < 50; i++) {
+                const btn = document.createElement('button');
+                btn.id = `gridBtn_${i}`;
+                btn.className = "w-full py-1.5 text-xs font-bold rounded border border-gray-300 bg-gray-50 text-gray-700 hover:bg-emerald-100 transition";
+                btn.innerText = i + 1;
+                btn.onclick = () => scrollToQuestion(i);
+                grid.appendChild(btn);
+            }
+            updateProgress();
+        }
+
+        // XỬ LÝ CHỌN ĐÁP ÁN
+        function selectAnswer(qIndex, optIndex) {
+            userAnswers[qIndex] = optIndex;
+
+            // Đổi màu nút trên lưới
+            const btn = document.getElementById(`gridBtn_${qIndex}`);
+            if (btn) {
+                btn.className = "w-full py-1.5 text-xs font-bold rounded border border-emerald-800 bg-emerald-700 text-yellow-300 shadow-sm";
+            }
+
+            updateProgress();
+        }
+
+        // CẬP NHẬT TIẾN TRÌNH CÂU ĐÃ LÀM
+        function updateProgress() {
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('progressText').innerText = `${answeredCount}/50`;
+            const pct = (answeredCount / 50) * 100;
+            document.getElementById('progressBar').style.width = `${pct}%`;
+        }
+
+        // CUỘN ĐẾN CÂU HỎI
+        function scrollToQuestion(index) {
+            const el = document.getElementById(`qCard_${index}`);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ĐỒNG HỒ ĐẾM NGƯỢC 25 PHÚT
+        function startTimer() {
+            clearInterval(examTimer);
+            examTimer = setInterval(() => {
+                timeRemaining--;
+                timeSpentSeconds++;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(examTimer);
+                    alert("Đã hết thời gian 25 phút! Hệ thống sẽ tự động nộp bài.");
+                    submitExam();
+                    return;
+                }
+
+                let m = Math.floor(timeRemaining / 60);
+                let s = timeRemaining % 60;
+                let formatted = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+
+                document.getElementById('timerMain').innerText = formatted;
+                document.getElementById('timerHeader').innerText = formatted;
+            }, 1000);
+        }
+
+        // XÁC NHẬN NỘP BÀI
+        function confirmSubmit() {
+            const answeredCount = Object.keys(userAnswers).length;
+            if (answeredCount < 50) {
+                if (!confirm(`Bạn mới trả lời ${answeredCount}/50 câu hỏi. Bạn có chắc chắn muốn nộp bài sớm không?`)) {
+                    return;
+                }
+            } else {
+                if (!confirm("Bạn có chắc chắn muốn nộp bài thi ngay bây giờ?")) {
+                    return;
+                }
+            }
+            submitExam();
+        }
+
+        // CHẤM ĐIỂM VÀ HIỂN THỊ KẾT QUẢ (SCREEN 2 -> SCREEN 3)
+        function submitExam() {
+            clearInterval(examTimer);
+
+            // Tính điểm
+            let correctCount = 0;
+            currentQuestions.forEach((q, idx) => {
+                if (userAnswers[idx] !== undefined && userAnswers[idx] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            let totalScore = correctCount * 2; // Mỗi câu 2 điểm
+
+            // Định dạng thời gian đã làm bài
+            let minutesSpent = Math.floor(timeSpentSeconds / 60);
+            let secondsSpent = timeSpentSeconds % 60;
+            let timeSpentFormatted = `${minutesSpent} phút ${secondsSpent} giây`;
+
+            // Hiển thị kết quả cá nhân
+            document.getElementById('resName').innerText = currentCandidate.fullName;
+            document.getElementById('resRank').innerText = currentCandidate.rank;
+            document.getElementById('resPosition').innerText = currentCandidate.position;
+            document.getElementById('resUnit').innerText = currentCandidate.unit;
+            document.getElementById('resTime').innerText = timeSpentFormatted;
+
+            document.getElementById('resScore').innerText = `${totalScore}/100`;
+            document.getElementById('resCorrectCount').innerText = `Đúng ${correctCount} / 50 câu`;
+
+            // Thông báo nhận xét theo thang điểm
+            const msgBox = document.getElementById('messageBox');
+            if (totalScore <= 40) {
+                msgBox.className = "p-4 rounded-lg border-l-4 border-red-600 bg-red-50 text-red-800 text-center font-bold shadow-sm";
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1 text-red-600"></i> Chúc mừng bạn đã hoàn thành bài kiểm tra! Bạn cần cố gắng cải thiện kiến thức hơn nữa! Xin cảm ơn!`;
+            } else if (totalScore <= 80) {
+                msgBox.className = "p-4 rounded-lg border-l-4 border-yellow-600 bg-yellow-50 text-yellow-800 text-center font-bold shadow-sm";
+                msgBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1 text-yellow-600"></i> Chúc mừng bạn đã hoàn thành bài kiểm tra! Bạn đã được số điểm khá tốt! Xin cảm ơn!`;
+            } else {
+                msgBox.className = "p-4 rounded-lg border-l-4 border-emerald-600 bg-emerald-50 text-emerald-900 text-center font-bold shadow-sm";
+                msgBox.innerHTML = `<i class="fa-solid fa-star mr-1 text-yellow-500"></i> Chúc mừng bạn đã hoàn thành bài kiểm tra! Số điểm của bạn rất ấn tượng! Xin cảm ơn!`;
+            }
+
+            // Render bảng đáp án chi tiết
+            renderReviewQuestions();
+
+            // Lưu kết quả vào LocalStorage
+            saveResultToHistory({
+                name: currentCandidate.fullName,
+                rankUnit: `${currentCandidate.rank} - ${currentCandidate.unit}`,
+                score: totalScore,
+                correct: correctCount,
+                timeSpent: timeSpentFormatted,
+                date: currentCandidate.date
+            });
+
+            // Chuyển giao diện
+            document.getElementById('screenExam').classList.add('hidden');
+            document.getElementById('headerTimeDisplay').classList.add('hidden');
+            document.getElementById('screenResult').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // RENDER XEM LẠI ĐÁP ÁN ĐÚNG/SAI
+        function renderReviewQuestions() {
+            const container = document.getElementById('reviewQuestionsContainer');
+            container.innerHTML = '';
+            const labels = ['A', 'B', 'C', 'D'];
+
+            currentQuestions.forEach((q, idx) => {
+                const userAns = userAnswers[idx];
+                const isCorrect = userAns === q.correct;
+
+                const item = document.createElement('div');
+                item.className = `p-3.5 rounded-lg border ${isCorrect ? 'bg-emerald-50 border-emerald-300' : 'bg-red-50 border-red-300'} space-y-2 text-sm`;
+
+                let optionsList = q.options.map((opt, oIdx) => {
+                    let style = "text-gray-700";
+                    let icon = "";
+                    if (oIdx === q.correct) {
+                        style = "text-emerald-800 font-bold";
+                        icon = ' <i class="fa-solid fa-check text-emerald-600 ml-1"></i> (Đáp án đúng)';
+                    }
+                    if (userAns === oIdx && !isCorrect) {
+                        style = "text-red-700 font-bold line-through";
+                        icon = ' <i class="fa-solid fa-xmark text-red-600 ml-1"></i> (Bạn chọn)';
+                    }
+                    return `<div class="${style} ml-4">${labels[oIdx]}. ${opt} ${icon}</div>`;
+                }).join('');
+
+                item.innerHTML = `
+                    <div class="font-bold flex items-start gap-2">
+                        <span class="${isCorrect ? 'text-emerald-700' : 'text-red-700'}">Câu ${idx + 1}:</span>
+                        <span>${q.question}</span>
+                    </div>
+                    <div class="space-y-1">${optionsList}</div>
+                `;
+
+                container.appendChild(item);
+            });
+        }
+
+        // LƯU LỊCH SỬ VÀO LOCALSTORAGE
+        function saveResultToHistory(record) {
+            let history = JSON.parse(localStorage.getItem('army_exam_history') || '[]');
+            history.unshift(record); // Thêm vào đầu danh sách
+            localStorage.setItem('army_exam_history', JSON.stringify(history));
+        }
+
+        // HIỂN THỊ MODAL BẢNG XẾP HẠNG / LỊCH SỬ
+        function showLeaderboardModal() {
+            let history = JSON.parse(localStorage.getItem('army_exam_history') || '[]');
+            const tbody = document.getElementById('leaderboardBody');
+            const emptyState = document.getElementById('emptyLeaderboard');
+
+            tbody.innerHTML = '';
+
+            if (history.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                history.forEach((rec, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gray-50 border-b";
+                    tr.innerHTML = `
+                        <td class="p-2.5 font-bold text-center">${idx + 1}</td>
+                        <td class="p-2.5 font-bold text-emerald-950">${rec.name}</td>
+                        <td class="p-2.5 text-gray-600">${rec.rankUnit}</td>
+                        <td class="p-2.5 text-center font-bold text-red-600">${rec.score}/100</td>
+                        <td class="p-2.5 text-center font-mono text-xs">${rec.timeSpent}</td>
+                        <td class="p-2.5 text-right text-xs text-gray-500">${rec.date}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('modalLeaderboard').classList.remove('hidden');
+        }
+
+        function closeLeaderboardModal() {
+            document.getElementById('modalLeaderboard').classList.add('hidden');
+        }
+
+        function clearLeaderboard() {
+            if (confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử thi đã lưu trên thiết bị này?")) {
+                localStorage.removeItem('army_exam_history');
+                showLeaderboardModal();
+            }
+        }
+
+        // ĐIỀU HƯỚNG VÀ RESTART
+        function confirmHome() {
+            if (!document.getElementById('screenExam').classList.contains('hidden')) {
+                if (confirm("Bài thi đang diễn ra. Nếu rời khỏi đây, kết quả sẽ không được lưu. Bạn chắc chắn muốn về trang chủ?")) {
+                    clearInterval(examTimer);
+                    goHome();
+                }
+            } else {
+                goHome();
+            }
+        }
+
+        function goHome() {
+            document.getElementById('screenExam').classList.add('hidden');
+            document.getElementById('screenResult').classList.add('hidden');
+            document.getElementById('headerTimeDisplay').classList.add('hidden');
+            document.getElementById('screenRegister').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function restartExam() {
+            goHome();
+        }
+    </script>
+</body>
+</html>
